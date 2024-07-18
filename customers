@@ -1,7 +1,3 @@
-if not game:IsLoaded() then
-    game.Loaded:Wait()
-end
-
 local teleportCoords = Vector3.new(-412, 22, -286)
 local teleportInterval = 5
 local message = "seip_dsk on distord SELL DHC"
