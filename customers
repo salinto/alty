@@ -89,6 +89,7 @@ end
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/MsorkyScripts/OpenSourceAntiCheat/main/AntiCheatBypass.txt"))()
 
+
 -- Performance Optimization
 for i, v in pairs(game:GetDescendants()) do
     if v:IsA("Part") then
@@ -142,15 +143,3 @@ TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 TextLabel.TextSize = 50.000  -- Increased text size
 TextLabel.TextYAlignment = Enum.TextYAlignment.Top  -- Align text to the top
 TextLabel.TextWrapped = true  -- Allow text to wrap to new lines
-
-while wait() do
-    pcall(function()
-        if game:GetService("Players").LocalPlayer.Character:FindFirstChild("BodyEffects"):FindFirstChild("K.O").Value == true then
-            for i, v in pairs(game:GetService("Players").LocalPlayer.Character:GetChildren()) do
-                if v:IsA("BasePart") then
-                    v:Destroy()
-                end
-            end
-        end
-    end)
-end
