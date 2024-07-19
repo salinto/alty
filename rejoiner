@@ -1,0 +1,44 @@
+local gameId = 2788229376
+local previousServers = {}
+
+local getCashiers = function()
+    local validCashiers = {}
+    for i, v in pairs(workspace.Cashiers:GetChildren()) do
+        if (v.Humanoid.Health > 0) then
+            table.insert(validCashiers, v)
+        end
+    end
+    return #validCashiers
+end
+
+local function serverHop()
+    local servers = {}
+    local req = http_request({
+        Url = "https://games.roblox.com/v1/games/" .. gameId .. "/servers/Public?sortOrder=Asc&limit=100"
+    })
+    local body = game:GetService("HttpService"):JSONDecode(req.Body)
+    if body and body.data then
+        for _, v in ipairs(body.data) do
+            if v.playing < v.maxPlayers and not table.find(previousServers, v.id) then
+                table.insert(servers, v.id)
+            end
+        end
+    end
+    
+    if #servers > 0 then
+        local serverId = servers[math.random(1, #servers)]
+        table.insert(previousServers, serverId)
+        if #previousServers > 100 then
+            table.remove(previousServers, 1)
+        end
+        game:GetService("TeleportService"):TeleportToPlaceInstance(gameId, serverId, game.Players.LocalPlayer)
+    else
+        warn("No suitable servers found.")
+    end
+end
+
+while task.wait(1) do
+    if getCashiers() <= 0 then
+        serverHop()
+    end
+end
