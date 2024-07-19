@@ -74,6 +74,19 @@ spawn(function()
     end
 end)
 
+local AntiSit = function(Char)
+	task.wait(1)	
+	local Hum = Char:WaitForChild("Humanoid")
+	Hum.Seated:Connect(function()
+		warn("SITTING")
+		Hum.Sit = false
+		Hum:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
+		task.wait(0.3)
+		Hum.Jump = true
+		--// theres prob a better method to do this but im lazy lol
+	end)
+end
+
 loadstring(game:HttpGet("https://raw.githubusercontent.com/MsorkyScripts/OpenSourceAntiCheat/main/AntiCheatBypass.txt"))()
 
 -- Performance Optimization
