@@ -21,6 +21,7 @@ _G.AutofarmSettings = {
 }
 
 loadstring(game:HttpGet("https://github.com/applless/RandomScripts/raw/main/IkuAutofarm"))()
+
 local gameId = 2788229376
 local previousServers = {}
 
@@ -60,8 +61,20 @@ local function serverHop()
     end
 end
 
+-- Detect if kicked and server hop
+local function onPlayerKicked()
+    serverHop()
+end
+
+game:GetService("Players").LocalPlayer.OnTeleport:Connect(function(teleportState)
+    if teleportState == Enum.TeleportState.Failed then
+        onPlayerKicked()
+    end
+end)
+
 while task.wait(1) do
     if getCashiers() <= 0 then
         serverHop()
     end
 end
+
