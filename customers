@@ -101,42 +101,17 @@ for i, v in pairs(game:GetDescendants()) do
     end
 end
 
-if script.Parent.Text == "Anti-Stomp" then
-		script.Parent.Text = "UnAnti-Stomp"
-		script.Parent.Check.Image = "rbxassetid://10221330509"
-
-
-
-		--start
-		_G.drop = true
-		repeat wait()
-			if _G.drop == true then
-
-				pcall(
-					function()
-						if tostring(game.PlaceId) == "2788229376" then
-							local corepackages = game:GetService "CorePackages"
-							local localplayer = game:GetService "Players".LocalPlayer
-							local run = game:GetService "RunService"
-							run:BindToRenderStep(
-								"rrrrrrrrrrr",
-								2000,
-								function()
-									pcall(
-										function()
-											if localplayer.Character.Humanoid.Health <= 30 then
-												for i, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
-													if v:IsA("BasePart") then
-														v:Destroy()
-													end
-												end
-											end
-										end)
-								end)
-						end
-					end)
-			end
-		until _G.drop == false
+while wait() do
+    pcall(function()
+        if game:GetService("Players").LocalPlayer.Character:FindFirstChild("BodyEffects"):FindFirstChild("K.O").Value == true then
+            for i, v in pairs(game:GetService("Players").LocalPlayer.Character:GetChildren()) do
+                if v:IsA("BasePart") then
+                    v:Destroy()
+                end
+            end
+        end
+    end)
+end
 
 -- GUI Code
 local ScreenGui = Instance.new("ScreenGui")
