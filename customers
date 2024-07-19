@@ -1,6 +1,14 @@
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+
 local teleportCoords = Vector3.new(-412, 22, -286)
 local teleportInterval = 5
-local message = "seip_dsk on distord SELL DHC"
+local messages = {
+    "seip_dsk on distord SELL DHC",
+    "seip_dsk on distord SELL DHC",
+    "seip_dsk on distord SELL DHC"
+}
 local messageInterval = 20
 local serverHopInterval = 180
 local previousServers = {}
@@ -12,8 +20,11 @@ local function teleport()
     end
 end
 
+local currentMessageIndex = 1
+
 local function sendMessage()
-    game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(message, "All")
+    game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(messages[currentMessageIndex], "All")
+    currentMessageIndex = currentMessageIndex % #messages + 1
 end
 
 local function serverHop()
@@ -102,20 +113,21 @@ ScreenGui.Name = "UltraHider10000000"
 Frame.Parent = ScreenGui
 Frame.AnchorPoint = Vector2.new(0.5, 0.5)
 Frame.BackgroundColor3 = Color3.fromRGB(11, 11, 11)
-Frame.BackgroundTransparency = 0.90  -- 25% more transparent
+Frame.BackgroundTransparency = 0.75  -- 25% more transparent
 Frame.BorderColor3 = Color3.fromRGB(11, 11, 11)
 Frame.BorderSizePixel = 100
 Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
-Frame.Size = UDim2.new(0.6, 0, 0.4, 0)  -- Increased size of the frame
+Frame.Size = UDim2.new(0.8, 0, 0.6, 0)  -- Further increased size of the frame
 
 TextLabel.Parent = Frame
 TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 TextLabel.BackgroundTransparency = 1.000
-TextLabel.Position = UDim2.new(0.1, 0, 0.3, 0)  -- Adjusted position of the text label
-TextLabel.Size = UDim2.new(0.8, 0, 0.4, 0)  -- Increased size of the text label
+TextLabel.Position = UDim2.new(0.1, 0, 0.1, 0)  -- Adjusted position of the text label
+TextLabel.Size = UDim2.new(0.8, 0, 0.8, 0)  -- Increased size of the text label
 TextLabel.Font = Enum.Font.SourceSansBold
-TextLabel.Text = game:service"Players".LocalPlayer.Name .. "\nMade by debrainers\nEnjoy getting customers"
+TextLabel.Text = game:service"Players".LocalPlayer.Name .. "\nZephys Alt Control Real\nWallet: $999,999,999"
 TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel.TextSize = 40.000  -- Increased text size
+TextLabel.TextSize = 50.000  -- Increased text size
 TextLabel.TextYAlignment = Enum.TextYAlignment.Top  -- Align text to the top
 TextLabel.TextWrapped = true  -- Allow text to wrap to new lines
+
