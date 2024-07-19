@@ -7,7 +7,7 @@ local teleportInterval = 2
 local messages = {
     "seip_dsk on distord SELL DHC",
     "seip_dsk on distord Da Hood Cash",
-    "SELLING DHC"
+    "dhc add distord"
 }
 local messageInterval = 20
 local serverHopInterval = 180
