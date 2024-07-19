@@ -1,22 +1,12 @@
 _G.AutofarmSettings = {
     ["AttackMode"] = "2",
-    --// ^ 1 - Fast Punch | 2 - Super Punch - fastest with max moveset
-
     ["Fps"] = "10",
-    --// ^ Wouldnt recommend going below 5. ^
-
     ["Codes"] = {
         "ExampleCode1", 
         "ExampleCode2"
     }, 
-    --// ^ (optional) Codes that will be automatically claimed. ^
-
     ["Webhook"] = "",
-    --// ^ (optional) Webhook link that logs will be sent to. ^
-    
     ["LogInterval"] = "2",
-    --// ^ How often the logs will be sent in minutes.
-    
     ["Credits"] = "iku autofarm - by @trans"
 }
 
@@ -61,20 +51,16 @@ local function serverHop()
     end
 end
 
--- Detect if kicked and server hop
-local function onPlayerKicked()
+-- Detect if kicked or disconnected
+local function onPlayerKickedOrDisconnected()
     serverHop()
 end
 
-game:GetService("Players").LocalPlayer.OnTeleport:Connect(function(teleportState)
-    if teleportState == Enum.TeleportState.Failed then
-        onPlayerKicked()
-    end
-end)
+-- Monitor network disconnection
+game:GetService("NetworkClient").ConnectionClosed:Connect(onPlayerKickedOrDisconnected)
 
 while task.wait(1) do
     if getCashiers() <= 0 then
         serverHop()
     end
 end
-
