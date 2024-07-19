@@ -53,18 +53,35 @@ local function serverHop()
     end
 end
 
--- Detect if kicked or disconnected
 local function onPlayerKickedOrDisconnected()
     print("Detected disconnection or kick. Initiating server hop...")
     serverHop()
 end
 
--- Monitor network disconnection
-game:GetService("NetworkClient").ConnectionClosed:Connect(onPlayerKickedOrDisconnected)
+-- Detecting if the player gets kicked
+game:GetService("Players").LocalPlayer.OnTeleport:Connect(function(teleportState)
+    if teleportState == Enum.TeleportState.Failed then
+        print("Teleport failed. Attempting to server hop again...")
+        task.wait(2)
+        serverHop()
+    elseif teleportState == Enum.TeleportState.Started then
+        print("Teleport started.")
+    end
+end)
 
+-- Detecting network disconnection
+game:GetService("RunService").Stepped:Connect(function()
+    if not game:IsLoaded() or game:GetService("NetworkClient") == nil then
+        print("Network disconnected. Initiating server hop...")
+        serverHop()
+    end
+end)
+
+-- Main loop to check cashiers and hop servers
 while task.wait(1) do
     if getCashiers() <= 0 then
         print("No cashiers left. Initiating server hop...")
         serverHop()
     end
 end
+
