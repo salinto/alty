@@ -6,8 +6,8 @@ local teleportCoords = Vector3.new(-412, 22, -286)
 local teleportInterval = 2
 local messages = {
     "seip_dsk on distord SELL DHC",
-    "seip_dsk on distord SELL DHC",
-    "seip_dsk on distord SELL DHC"
+    "seip_dsk on distord",
+    "SELLING DHC"
 }
 local messageInterval = 20
 local serverHopInterval = 180
