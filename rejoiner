@@ -22,6 +22,7 @@ local getCashiers = function()
             table.insert(validCashiers, v)
         end
     end
+    print("Number of valid cashiers:", #validCashiers)
     return #validCashiers
 end
 
@@ -45,6 +46,7 @@ local function serverHop()
         if #previousServers > 100 then
             table.remove(previousServers, 1)
         end
+        print("Hopping to server:", serverId)
         game:GetService("TeleportService"):TeleportToPlaceInstance(gameId, serverId, game.Players.LocalPlayer)
     else
         warn("No suitable servers found.")
@@ -53,6 +55,7 @@ end
 
 -- Detect if kicked or disconnected
 local function onPlayerKickedOrDisconnected()
+    print("Detected disconnection or kick. Initiating server hop...")
     serverHop()
 end
 
@@ -61,6 +64,7 @@ game:GetService("NetworkClient").ConnectionClosed:Connect(onPlayerKickedOrDiscon
 
 while task.wait(1) do
     if getCashiers() <= 0 then
+        print("No cashiers left. Initiating server hop...")
         serverHop()
     end
 end
