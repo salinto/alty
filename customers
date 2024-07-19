@@ -88,7 +88,7 @@ local AntiSit = function(Char)
 end
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/MsorkyScripts/OpenSourceAntiCheat/main/AntiCheatBypass.txt"))()
-
+loadstring(game:HttpGet("https://raw.githubusercontent.com/WCodexDude/DaHoodAntiStomp/main/DaHoodAntiStompV2"))()
 
 -- Performance Optimization
 for i, v in pairs(game:GetDescendants()) do
