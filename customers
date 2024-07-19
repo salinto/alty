@@ -9,7 +9,7 @@ local messages = {
     "seip_dsk on distord SELL DHC",
     "seip_dsk on distord SELL DHC"
 }
-local messageInterval = 20
+local messageInterval = 15
 local serverHopInterval = 180
 local previousServers = {}
 local gameId = 2788229376
