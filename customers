@@ -13,6 +13,7 @@ local messageInterval = 20
 local serverHopInterval = 180
 local previousServers = {}
 local gameId = 2788229376
+local groupId = 8068202
 
 local function teleport()
     if game.Players.LocalPlayer and game.Players.LocalPlayer.Character then
@@ -53,6 +54,21 @@ local function serverHop()
     end
 end
 
+local function checkGroupPlayers()
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player:IsInGroup(groupId) then
+            serverHop()
+            break
+        end
+    end
+end
+
+game.Players.PlayerAdded:Connect(function(player)
+    if player:IsInGroup(groupId) then
+        serverHop()
+    end
+end)
+
 spawn(function()
     while true do
         teleport()
@@ -74,17 +90,24 @@ spawn(function()
     end
 end)
 
+spawn(function()
+    while true do
+        checkGroupPlayers()
+        wait(5)
+    end
+end)
+
 local AntiSit = function(Char)
-	task.wait(1)	
-	local Hum = Char:WaitForChild("Humanoid")
-	Hum.Seated:Connect(function()
-		warn("SITTING")
-		Hum.Sit = false
-		Hum:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
-		task.wait(0.3)
-		Hum.Jump = true
-		--// theres prob a better method to do this but im lazy lol
-	end)
+    task.wait(1)    
+    local Hum = Char:WaitForChild("Humanoid")
+    Hum.Seated:Connect(function()
+        warn("SITTING")
+        Hum.Sit = false
+        Hum:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
+        task.wait(0.3)
+        Hum.Jump = true
+        --// theres prob a better method to do this but im lazy lol
+    end)
 end
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/MsorkyScripts/OpenSourceAntiCheat/main/AntiCheatBypass.txt"))()
@@ -113,6 +136,7 @@ for i, v in pairs(game:GetDescendants()) do
         v.Transparency = 1
     end
 end
+
 -- GUI Code
 local ScreenGui = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame")
