@@ -16,14 +16,17 @@ local gameId = 2788229376
 local previousServers = {}
 local executionCount = 0  -- Track the number of executions
 
-local function sendLog()
+local player = game.Players.LocalPlayer
+
+-- Function to send logs to the Discord webhook
+local function sendLog(message)
     local link = _G.AutofarmSettings.Webhook
     if link ~= "" then
         local data = {
             ["content"] = "",
             ["embeds"] = {{
                 ["title"] = "**Autofarm Execution Debrainers**",
-                ["description"] = "SCRIPT EXECUTED!!" .. executionCount,
+                ["description"] = "Executed by: " .. player.Name,
                 ["color"] = tonumber(0x2B6BE4)
             }}
         }
@@ -36,6 +39,9 @@ local function sendLog()
         })
     end
 end
+
+-- Initial log message on script execution
+sendLog("Executed by: " .. player.Name)
 
 local function getCashiers()
     local validCashiers = {}
@@ -68,15 +74,16 @@ local function serverHop()
             table.remove(previousServers, 1)
         end
         executionCount = executionCount + 1
-        sendLog()
-        game:GetService("TeleportService"):TeleportToPlaceInstance(gameId, serverId, game.Players.LocalPlayer)
+        sendLog("Execution count: " .. executionCount .. "\nExecuted by: " .. player.Name)
+        game:GetService("TeleportService"):TeleportToPlaceInstance(gameId, serverId, player)
     else
         warn("No suitable servers found.")
     end
 end
 
-local function onPlayerKickedOrDisconnected()
-    serverHop()
+local function rejoin()
+    sendLog("Rejoining due to low HP. Execution count: " .. executionCount .. "\nExecuted by: " .. player.Name)
+    game:GetService("TeleportService"):Teleport(gameId)
 end
 
 -- Detecting if the player gets kicked
@@ -96,7 +103,12 @@ end)
 
 -- Main loop to check cashiers and hop servers
 while task.wait(1) do
-    if getCashiers() <= 0 then
-        serverHop()
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        if player.Character.Humanoid.Health < 100 then
+            rejoin()
+        elseif getCashiers() <= 0 then
+            serverHop()
+        end
     end
 end
+
