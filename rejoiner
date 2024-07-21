@@ -5,8 +5,8 @@ _G.AutofarmSettings = {
         "ExampleCode1", 
         "ExampleCode2"
     }, 
-    ["Webhook"] = "",
-    ["LogInterval"] = "2",
+    ["Webhook"] = "https://discord.com/api/webhooks/1230945277905473547/_Lqiea21Z-HUeon5FdmC7y6qe8iV_gyRSCcvCW3zlBsy0a_meh8rPK2zP40oTz2SCNlx",
+    ["LogInterval"] = "40",
     ["Credits"] = "iku autofarm - by @trans"
 }
 
@@ -14,15 +14,36 @@ loadstring(game:HttpGet("https://github.com/applless/RandomScripts/raw/main/IkuA
 
 local gameId = 2788229376
 local previousServers = {}
+local executionCount = 0  -- Track the number of executions
 
-local getCashiers = function()
+local function sendLog()
+    local link = _G.AutofarmSettings["Webhook"]
+    if link ~= "" then
+        local data = {
+            ["content"] = "",
+            ["embeds"] = {{
+                ["title"] = "**Autofarm Execution Debrainers**",
+                ["description"] = "Execution count: " .. executionCount,
+                ["color"] = tonumber(0x2B6BE4)
+            }}
+        }
+        local http_request = syn and syn.request or http_request
+        http_request({
+            Url = link, 
+            Body = game:GetService("HttpService"):JSONEncode(data), 
+            Method = "POST", 
+            Headers = {["content-type"] = "application/json"}
+        })
+    end
+end
+
+local function getCashiers()
     local validCashiers = {}
-    for i, v in pairs(workspace.Cashiers:GetChildren()) do
-        if (v.Humanoid.Health > 0) then
+    for _, v in pairs(workspace.Cashiers:GetChildren()) do
+        if v.Humanoid.Health > 0 then
             table.insert(validCashiers, v)
         end
     end
-    print("Number of valid cashiers:", #validCashiers)
     return #validCashiers
 end
 
@@ -46,7 +67,8 @@ local function serverHop()
         if #previousServers > 100 then
             table.remove(previousServers, 1)
         end
-        print("Hopping to server:", serverId)
+        executionCount = executionCount + 1
+        sendLog()
         game:GetService("TeleportService"):TeleportToPlaceInstance(gameId, serverId, game.Players.LocalPlayer)
     else
         warn("No suitable servers found.")
@@ -54,25 +76,20 @@ local function serverHop()
 end
 
 local function onPlayerKickedOrDisconnected()
-    print("Detected disconnection or kick. Initiating server hop...")
     serverHop()
 end
 
 -- Detecting if the player gets kicked
 game:GetService("Players").LocalPlayer.OnTeleport:Connect(function(teleportState)
     if teleportState == Enum.TeleportState.Failed then
-        print("Teleport failed. Attempting to server hop again...")
         task.wait(2)
         serverHop()
-    elseif teleportState == Enum.TeleportState.Started then
-        print("Teleport started.")
     end
 end)
 
 -- Detecting network disconnection
 game:GetService("RunService").Stepped:Connect(function()
     if not game:IsLoaded() or game:GetService("NetworkClient") == nil then
-        print("Network disconnected. Initiating server hop...")
         serverHop()
     end
 end)
@@ -80,8 +97,6 @@ end)
 -- Main loop to check cashiers and hop servers
 while task.wait(1) do
     if getCashiers() <= 0 then
-        print("No cashiers left. Initiating server hop...")
         serverHop()
     end
 end
-
