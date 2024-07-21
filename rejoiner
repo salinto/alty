@@ -18,6 +18,10 @@ local executionCount = 0  -- Track the number of executions
 
 local player = game.Players.LocalPlayer
 
+local function getTimestamp()
+    return os.date("%Y-%m-%d %H:%M:%S", os.time())
+end
+
 -- Function to send logs to the Discord webhook
 local function sendLog(message)
     local link = _G.AutofarmSettings.Webhook
@@ -26,8 +30,9 @@ local function sendLog(message)
             ["content"] = "",
             ["embeds"] = {{
                 ["title"] = "**Autofarm Execution Debrainers**",
-                ["description"] = "Executed by: " .. player.Name,
-                ["color"] = tonumber(0x2B6BE4)
+                ["description"] = message,
+                ["color"] = tonumber(0x2B6BE4),
+                ["footer"] = { ["text"] = "Timestamp: " .. getTimestamp() }
             }}
         }
         local http_request = syn and syn.request or http_request
@@ -111,4 +116,3 @@ while task.wait(1) do
         end
     end
 end
-
