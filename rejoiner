@@ -87,7 +87,7 @@ local function serverHop()
 end
 
 local function rejoin()
-    sendLog("Rejoining due to low HP. Execution count: " .. executionCount .. "\nExecuted by: " .. player.Name)
+    sendLog("Rejoining due to low HP. \nExecuted by: " .. player.Name)
     game:GetService("TeleportService"):Teleport(gameId)
 end
 
