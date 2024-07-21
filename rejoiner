@@ -17,7 +17,7 @@ local previousServers = {}
 local executionCount = 0  -- Track the number of executions
 
 local function sendLog()
-    local link = _G.AutofarmSettings["Webhook"]
+    local link = _G.AutofarmSettings.Webhook
     if link ~= "" then
         local data = {
             ["content"] = "",
