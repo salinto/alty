@@ -152,7 +152,7 @@ end)
 
 spawn(function()
     while true do
-        task.wait(480) -- 8 minutes
+        task.wait(300) -- idk
         serverHop()
     end
 end)
