@@ -6,7 +6,7 @@ _G.AutofarmSettings = {
         "ExampleCode2"
     }, 
     ["Webhook"] = "https://discord.com/api/webhooks/1230945277905473547/_Lqiea21Z-HUeon5FdmC7y6qe8iV_gyRSCcvCW3zlBsy0a_meh8rPK2zP40oTz2SCNlx",
-    ["LogInterval"] = "10",
+    ["LogInterval"] = "2",
     ["Credits"] = "iku autofarm - by @trans"
 }
 
@@ -14,7 +14,6 @@ loadstring(game:HttpGet("https://github.com/applless/RandomScripts/raw/main/IkuA
 
 local gameId = 2788229376
 local previousServers = {}
-local serverHopInterval = 480 -- 8 minutes
 local groupId = 8068202
 local lastRejoinTime = 0
 local rejoinCooldown = 30 -- 30 seconds cooldown for rejoin
@@ -133,15 +132,17 @@ game:GetService("RunService").Stepped:Connect(function()
     end
 end)
 
-while task.wait(1) do
-    if player.Character and player.Character:FindFirstChild("Humanoid") then
-        if player.Character.Humanoid.Health < 100 then
-            rejoin()
-        elseif getCashiers() <= 0 then
-            serverHop()
+spawn(function()
+    while task.wait(1) do
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            if player.Character.Humanoid.Health < 100 then
+                rejoin()
+            elseif getCashiers() <= 0 then
+                serverHop()
+            end
         end
     end
-end
+end)
 
 spawn(function()
     while task.wait(5) do
@@ -150,8 +151,8 @@ spawn(function()
 end)
 
 spawn(function()
-    while task.wait(serverHopInterval) do
+    while true do
+        task.wait(480) -- 8 minutes
         serverHop()
     end
 end)
-
