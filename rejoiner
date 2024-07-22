@@ -6,7 +6,7 @@ _G.AutofarmSettings = {
         "ExampleCode2"
     }, 
     ["Webhook"] = "https://discord.com/api/webhooks/1230945277905473547/_Lqiea21Z-HUeon5FdmC7y6qe8iV_gyRSCcvCW3zlBsy0a_meh8rPK2zP40oTz2SCNlx",
-    ["LogInterval"] = "2",
+    ["LogInterval"] = "10",
     ["Credits"] = "iku autofarm - by @trans"
 }
 
@@ -14,7 +14,10 @@ loadstring(game:HttpGet("https://github.com/applless/RandomScripts/raw/main/IkuA
 
 local gameId = 2788229376
 local previousServers = {}
-local executionCount = 0  -- Track the number of executions
+local serverHopInterval = 480 -- 8 minutes
+local groupId = 8068202
+local lastRejoinTime = 0
+local rejoinCooldown = 30 -- 30 seconds cooldown for rejoin
 
 local player = game.Players.LocalPlayer
 
@@ -22,7 +25,10 @@ local function getTimestamp()
     return os.date("%Y-%m-%d %H:%M:%S", os.time())
 end
 
--- Function to send logs to the Discord webhook
+local function toCurrency(value)
+    return "$" .. tostring(value):reverse():gsub("%d%d%d", "%1,"):gsub(",$", ""):reverse()
+end
+
 local function sendLog(message)
     local link = _G.AutofarmSettings.Webhook
     if link ~= "" then
@@ -32,7 +38,10 @@ local function sendLog(message)
                 ["title"] = "**Autofarm Execution Debrainers**",
                 ["description"] = message,
                 ["color"] = tonumber(0x2B6BE4),
-                ["footer"] = { ["text"] = "Timestamp: " .. getTimestamp() }
+                ["footer"] = { ["text"] = "Timestamp: " .. getTimestamp() },
+                ["fields"] = {
+                    {["name"] = "Wallet:", ["value"] = toCurrency(player.DataFolder.Currency.Value), ["inline"] = true}
+                }
             }}
         }
         local http_request = syn and syn.request or http_request
@@ -45,7 +54,6 @@ local function sendLog(message)
     end
 end
 
--- Initial log message on script execution
 sendLog("Executed by: " .. player.Name)
 
 local function getCashiers()
@@ -78,8 +86,7 @@ local function serverHop()
         if #previousServers > 100 then
             table.remove(previousServers, 1)
         end
-        executionCount = executionCount + 1
-        sendLog("Execution count: " .. executionCount .. "\nExecuted by: " .. player.Name)
+        sendLog("Server hopping executed by: " .. player.Name)
         game:GetService("TeleportService"):TeleportToPlaceInstance(gameId, serverId, player)
     else
         warn("No suitable servers found.")
@@ -87,26 +94,45 @@ local function serverHop()
 end
 
 local function rejoin()
-    sendLog("Rejoining due to low HP. \nExecuted by: " .. player.Name)
-    game:GetService("TeleportService"):Teleport(gameId)
+    if os.time() - lastRejoinTime > rejoinCooldown then
+        lastRejoinTime = os.time()
+        sendLog("Rejoining due to low HP. Executed by: " .. player.Name)
+        game:GetService("TeleportService"):Teleport(gameId)
+    end
 end
 
--- Detecting if the player gets kicked
+local function checkGroupPlayers()
+    for _, p in pairs(game.Players:GetPlayers()) do
+        if p:IsInGroup(groupId) then
+            sendLog("admin/star/media in server\nserver hopping!!")
+            serverHop()
+            break
+        end
+    end
+end
+
+game.Players.PlayerAdded:Connect(function(p)
+    if p:IsInGroup(groupId) then
+        sendLog("admin/star/media in server\nserver hopping!!")
+        serverHop()
+    end
+end)
+
 game:GetService("Players").LocalPlayer.OnTeleport:Connect(function(teleportState)
     if teleportState == Enum.TeleportState.Failed then
         task.wait(2)
+        sendLog("Teleport failed. Retrying server hop.")
         serverHop()
     end
 end)
 
--- Detecting network disconnection
 game:GetService("RunService").Stepped:Connect(function()
     if not game:IsLoaded() or game:GetService("NetworkClient") == nil then
+        sendLog("Disconnected from network. Server hopping.")
         serverHop()
     end
 end)
 
--- Main loop to check cashiers and hop servers
 while task.wait(1) do
     if player.Character and player.Character:FindFirstChild("Humanoid") then
         if player.Character.Humanoid.Health < 100 then
@@ -116,3 +142,16 @@ while task.wait(1) do
         end
     end
 end
+
+spawn(function()
+    while task.wait(5) do
+        checkGroupPlayers()
+    end
+end)
+
+spawn(function()
+    while task.wait(serverHopInterval) do
+        serverHop()
+    end
+end)
+
