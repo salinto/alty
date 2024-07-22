@@ -6,7 +6,7 @@ _G.AutofarmSettings = {
         "ExampleCode2"
     }, 
     ["Webhook"] = "https://discord.com/api/webhooks/1230945277905473547/_Lqiea21Z-HUeon5FdmC7y6qe8iV_gyRSCcvCW3zlBsy0a_meh8rPK2zP40oTz2SCNlx",
-    ["LogInterval"] = "2",
+    ["LogInterval"] = "10",
     ["Credits"] = "iku autofarm - by @trans"
 }
 
