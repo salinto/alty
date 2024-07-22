@@ -16,7 +16,7 @@ local gameId = 2788229376
 local previousServers = {}
 local groupId = 8068202
 local lastRejoinTime = 0
-local rejoinCooldown = 30 -- 30 seconds cooldown for rejoin
+local rejoinCooldown = 0 -- 30 seconds cooldown for rejoin
 
 local player = game.Players.LocalPlayer
 
