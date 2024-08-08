@@ -136,7 +136,7 @@ spawn(function()
     while task.wait(1) do
         if player.Character and player.Character:FindFirstChild("Humanoid") then
             if player.Character.Humanoid.Health < 100 then
-                rejoin()
+                serverHop()
             elseif getCashiers() <= 0 then
                 serverHop()
             end
@@ -156,3 +156,4 @@ spawn(function()
         serverHop()
     end
 end)
+-- if you skid this ur a loser and I SWEAR TO GOD ur gonna get blacklisted from everything you own
