@@ -64,7 +64,7 @@ local function getCashiers()
     return #validCashiers
 end
 
--- New server hopping script starts here
+-- Server hopping script with player count targeting ~20 players starts here
 local PlaceID = game.PlaceId
 local AllIDs = {}
 local foundAnything = ""
@@ -77,23 +77,32 @@ if not File then
     table.insert(AllIDs, actualHour)
     writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(AllIDs))
 end
+
 function TPReturner()
-    local Site;
+    local Site
     if foundAnything == "" then
         Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100'))
     else
         Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100&cursor=' .. foundAnything))
     end
+
     local ID = ""
     if Site.nextPageCursor and Site.nextPageCursor ~= "null" and Site.nextPageCursor ~= nil then
         foundAnything = Site.nextPageCursor
     end
-    local num = 0;
-    for i,v in pairs(Site.data) do
+
+    local targetPlayerCount = 20
+    local tolerance = 5 -- Allows slight flexibility in player count
+    local num = 0
+
+    for i, v in pairs(Site.data) do
         local Possible = true
         ID = tostring(v.id)
-        if tonumber(v.maxPlayers) > tonumber(v.playing) then
-            for _,Existing in pairs(AllIDs) do
+        local playerCount = tonumber(v.playing)
+        local maxPlayers = tonumber(v.maxPlayers)
+        
+        if maxPlayers > playerCount then
+            for _, Existing in pairs(AllIDs) do
                 if num ~= 0 then
                     if ID == tostring(Existing) then
                         Possible = false
@@ -109,7 +118,8 @@ function TPReturner()
                 end
                 num = num + 1
             end
-            if Possible == true then
+
+            if Possible and playerCount >= targetPlayerCount - tolerance and playerCount <= targetPlayerCount + tolerance then
                 table.insert(AllIDs, ID)
                 wait()
                 pcall(function()
@@ -118,6 +128,7 @@ function TPReturner()
                     game:GetService("TeleportService"):TeleportToPlaceInstance(PlaceID, ID, game.Players.LocalPlayer)
                 end)
                 wait(4)
+                break
             end
         end
     end
@@ -133,7 +144,7 @@ local Hop = function()
         end)
     end
 end
--- New server hopping script ends here
+-- Server hopping script ends here
 
 local function rejoin()
     if os.time() - lastRejoinTime > rejoinCooldown then
@@ -195,7 +206,7 @@ end)
 
 spawn(function()
     while true do
-        task.wait(300) -- idk
+        task.wait(300)
         Hop()
     end
 end)
